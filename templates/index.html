@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 恋爱伴侣</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         background: #f5f5f7; display: flex; justify-content: center;
+         align-items: center; min-height: 100vh; }
+  #app { width: 420px; height: 700px; background: #fff; border-radius: 20px;
+         box-shadow: 0 8px 40px rgba(0,0,0,0.12); display: flex;
+         flex-direction: column; overflow: hidden; }
+
+  /* header */
+  #header { background: linear-gradient(135deg, #FF6B9D, #FF8E53);
+            padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  #avatar { width: 46px; height: 46px; border-radius: 50%;
+            background: rgba(255,255,255,0.3); display: flex;
+            align-items: center; justify-content: center; font-size: 24px;
+            border: 2px solid rgba(255,255,255,0.6); flex-shrink: 0; }
+  #header-name { font-size: 16px; font-weight: 600; color: #fff; }
+  #header-status { font-size: 12px; color: rgba(255,255,255,0.85);
+                   display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+  .dot { width: 7px; height: 7px; background: #7FFF7F;
+         border-radius: 50%; display: inline-block; }
+
+  /* persona switcher */
+  #persona-bar { display: flex; gap: 6px; padding: 10px 14px;
+                 background: #fafafa; border-bottom: 1px solid #eee;
+                 overflow-x: auto; }
+  .p-btn { flex-shrink: 0; padding: 4px 12px; border-radius: 20px;
+           font-size: 12px; border: 1px solid #ddd; background: #fff;
+           color: #666; cursor: pointer; transition: all 0.15s; }
+  .p-btn.active { background: #FF6B9D; color: #fff; border-color: #FF6B9D; }
+
+  /* messages */
+  #messages { flex: 1; overflow-y: auto; padding: 14px;
+              display: flex; flex-direction: column; gap: 10px; }
+  .msg { display: flex; gap: 8px; max-width: 80%;
+         animation: fadeUp 0.2s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(6px); }
+                      to   { opacity:1; transform:translateY(0); } }
+  .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+  .msg-avatar { width: 32px; height: 32px; border-radius: 50%;
+                background: linear-gradient(135deg,#FF6B9D,#FF8E53);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 15px; flex-shrink: 0; }
+  .msg.user .msg-avatar { background: #e8eaf6; }
+  .bubble { padding: 9px 13px; border-radius: 16px; font-size: 14px;
+            line-height: 1.6; color: #333; background: #f1f1f4;
+            max-width: 100%; word-break: break-word; }
+  .msg.user .bubble { background: #FF6B9D; color: #fff; }
+
+  /* typing */
+  .typing-wrap { display: flex; gap: 8px; align-items: center; }
+  .typing { display: flex; gap: 4px; padding: 10px 14px;
+            background: #f1f1f4; border-radius: 16px; }
+  .typing span { width: 7px; height: 7px; border-radius: 50%;
+                 background: #FF6B9D; animation: bounce 1s infinite; }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)}
+                      30%{transform:translateY(-6px)} }
+
+  /* quick buttons */
+  #quick-bar { display: flex; gap: 6px; padding: 6px 12px 2px;
+               overflow-x: auto; }
+  .q-btn { flex-shrink: 0; padding: 4px 10px; border-radius: 14px;
+           font-size: 12px; border: 1px solid #FF6B9D; color: #FF6B9D;
+           background: transparent; cursor: pointer; white-space: nowrap;
+           transition: all 0.15s; }
+  .q-btn:hover { background: #FF6B9D; color: #fff; }
+
+  /* input area */
+  #input-area { display: flex; gap: 8px; padding: 10px 12px;
+                border-top: 1px solid #eee; background: #fff;
+                align-items: flex-end; }
+  #msg-input { flex: 1; border: 1px solid #ddd; border-radius: 20px;
+               padding: 8px 14px; font-size: 14px; resize: none;
+               max-height: 80px; outline: none; font-family: inherit;
+               background: #f9f9f9; }
+  #msg-input:focus { border-color: #FF6B9D; background: #fff; }
+  #send-btn { width: 40px; height: 40px; border-radius: 50%;
+              background: #FF6B9D; border: none; cursor: pointer;
+              display: flex; align-items: center; justify-content: center;
+              flex-shrink: 0; transition: transform 0.1s; }
+  #send-btn:hover  { transform: scale(1.08); }
+  #send-btn:active { transform: scale(0.96); }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div id="avatar">🌸</div>
+    <div>
+      <div id="header-name">小雅</div>
+      <div id="header-status">
+        <span class="dot"></span>
+        <span id="header-tag">在线 · 温柔体贴</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="persona-bar">
+    <button class="p-btn active" onclick="switchPersona('xiaoya','小雅','🌸','温柔体贴',this)">🌸 小雅</button>
+    <button class="p-btn" onclick="switchPersona('chenmo','陈默','🎸','冷酷学长',this)">🎸 陈默</button>
+    <button class="p-btn" onclick="switchPersona('qingtian','晴天','☀️','阳光男友',this)">☀️ 晴天</button>
+    <button class="p-btn" onclick="switchPersona('sumo','苏沫','🌙','文艺女友',this)">🌙 苏沫</button>
+  </div>
+
+  <div id="messages">
+    <div class="msg">
+      <div class="msg-avatar">🌸</div>
+      <div class="bubble">宝贝，你终于来了！我在想你呢～今天过得怎么样呀？💕</div>
+    </div>
+  </div>
+
+  <div id="quick-bar">
+    <button class="q-btn" onclick="quickSend('我今天好累...')">我今天好累...</button>
+    <button class="q-btn" onclick="quickSend('想你了')">想你了</button>
+    <button class="q-btn" onclick="quickSend('陪我聊聊天吧')">陪我聊聊</button>
+    <button class="q-btn" onclick="quickSend('你最近在做什么')">你在做什么</button>
+    <button class="q-btn" onclick="quickSend('我有点难过')">我有点难过</button>
+  </div>
+
+  <div id="input-area">
+    <textarea id="msg-input" rows="1" placeholder="说点什么吧..."></textarea>
+    <button id="send-btn" onclick="sendMsg()" aria-label="发送">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  let personaId = 'xiaoya';
+  let history = [];
+  let busy = false;
+
+  function switchPersona(id, name, emoji, tag, btn) {
+    personaId = id;
+    history = [];
+    document.getElementById('avatar').textContent = emoji;
+    document.getElementById('header-name').textContent = name;
+    document.getElementById('header-tag').textContent = '在线 · ' + tag;
+    document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const msgs = document.getElementById('messages');
+    msgs.innerHTML = '';
+    addBubble('ai', `你好呀，我是${name}～${emoji} 有什么想聊的吗？`);
+  }
+
+  function addBubble(role, text) {
+    const msgs = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = 'msg' + (role === 'user' ? ' user' : '');
+    const av = document.createElement('div');
+    av.className = 'msg-avatar';
+    av.textContent = role === 'user' ? '👤' : document.getElementById('avatar').textContent;
+    const bub = document.createElement('div');
+    bub.className = 'bubble';
+    bub.textContent = text;
+    div.appendChild(av); div.appendChild(bub);
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping() {
+    const msgs = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = 'msg'; div.id = 'typing-ind';
+    div.innerHTML = `<div class="msg-avatar">${document.getElementById('avatar').textContent}</div>
+      <div class="typing"><span></span><span></span><span></span></div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typing-ind');
+    if (t) t.remove();
+  }
+
+  async function sendMsg() {
+    if (busy) return;
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    input.style.height = 'auto';
+
+    addBubble('user', text);
+    busy = true;
+    showTyping();
+
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ persona: personaId, history, message: text })
+      });
+      const data = await res.json();
+      removeTyping();
+      if (data.reply) {
+        addBubble('ai', data.reply);
+        history.push({ role: 'user', content: text });
+        history.push({ role: 'assistant', content: data.reply });
+        if (history.length > 30) history = history.slice(-30);
+      } else {
+        addBubble('ai', '网络好像出了点问题，稍后再聊吧～');
+      }
+    } catch(e) {
+      removeTyping();
+      addBubble('ai', '呜呜，连不上了，稍后再试吧～');
+    }
+    busy = false;
+  }
+
+  function quickSend(text) {
+    document.getElementById('msg-input').value = text;
+    sendMsg();
+  }
+
+  document.getElementById('msg-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+  });
+  document.getElementById('msg-input').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+  });
+</script>
+</body>
+</html>
