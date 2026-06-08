@@ -234,7 +234,6 @@ while (true) {
 history.push({ role: 'user', content: text });
 history.push({ role: 'assistant', content: fullReply });
 if (history.length > 30) history = history.slice(-30);
-      }
     } catch(e) {
       removeTyping();
       addBubble('ai', '呜呜，连不上了，稍后再试吧～');
