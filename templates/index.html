@@ -202,19 +202,38 @@
 
     try {
       const res = await fetch('/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ persona: personaId, history, message: text })
-      });
-      const data = await res.json();
-      removeTyping();
-      if (data.reply) {
-        addBubble('ai', data.reply);
-        history.push({ role: 'user', content: text });
-        history.push({ role: 'assistant', content: data.reply });
-        if (history.length > 30) history = history.slice(-30);
-      } else {
-        addBubble('ai', '网络好像出了点问题，稍后再聊吧～');
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ persona: personaId, history, message: text })
+});
+
+removeTyping();
+const msgs = document.getElementById('messages');
+const div = document.createElement('div');
+div.className = 'msg';
+const av = document.createElement('div');
+av.className = 'msg-avatar';
+av.textContent = document.getElementById('avatar').textContent;
+const bub = document.createElement('div');
+bub.className = 'bubble';
+bub.textContent = '';
+div.appendChild(av); div.appendChild(bub);
+msgs.appendChild(div);
+
+const reader = res.body.getReader();
+const decoder = new TextDecoder();
+let fullReply = '';
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  const chunk = decoder.decode(value);
+  fullReply += chunk;
+  bub.textContent = fullReply;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+history.push({ role: 'user', content: text });
+history.push({ role: 'assistant', content: fullReply });
+if (history.length > 30) history = history.slice(-30);
       }
     } catch(e) {
       removeTyping();
