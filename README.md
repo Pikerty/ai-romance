@@ -31,10 +31,9 @@ pip install -r requirements.txt
 cp .env.example .env
 \```
 
-然后编辑 `.env` 文件，填入你的 Anthropic API Key：
 
 \```
-ANTHROPIC_API_KEY=你的APIKey
+ANTHROPIC_API_KEY=AQ.Ab8RN6KBvbsrd-030yaqIJ3jxJP6EfQIppSzalhXNUUBDnfpBg
 \```
 
 > 获取 API Key：https://console.anthropic.com/
