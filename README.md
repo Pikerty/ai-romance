@@ -85,4 +85,4 @@ ai-romance/
 
 ## License
 
-MIT © Pikerty
+cdcas © Pikerty
