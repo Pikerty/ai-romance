@@ -47,7 +47,7 @@ def chat():
     def generate():
         try:
             model = genai.GenerativeModel(
-                model_name="gemini-2.0-flash",
+                model_name="gemini-3.8-flash",
                 system_instruction=persona["prompt"]
             )
             session = model.start_chat(history=gemini_history)
