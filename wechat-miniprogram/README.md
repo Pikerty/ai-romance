@@ -1,6 +1,6 @@
 # ai-romance 微信小程序版
 
-微信小程序前端 + 微信云开发云函数的 AI 聊天小程序（appid 见 project.config.json，云环境 cloud1-6gnc71q3b00b52ba）。
+微信小程序前端 + 微信云开发云函数的 AI 聊天小程序（appid 见 project.config.json，云环境 cloud1-d5gbjght3845fd3b1）。
 
 ## 架构
 

@@ -1,4 +1,4 @@
-const CLOUD_ENV = 'cloud1-6gnc71q3b00b52ba'
+const CLOUD_ENV = 'cloud1-d5gbjght3845fd3b1'
 
 App({
   globalData: {
