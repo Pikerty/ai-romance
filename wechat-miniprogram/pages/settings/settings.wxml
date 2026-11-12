@@ -1,0 +1,24 @@
+<view class="settings-page">
+  <view class="setting-item">
+    <text>夜间模式</text>
+    <switch checked="{{isNightMode}}" bindchange="toggleNightMode" />
+  </view>
+
+  <view class="setting-item column">
+    <text class="label">默认 AI 模型</text>
+    <radio-group class="model-group" bindchange="onModelChange">
+      <label
+        wx:for="{{aiModels}}"
+        wx:key="id"
+        class="model-option"
+      >
+        <radio value="{{item.id}}" checked="{{currentModel === item.id}}" />
+        <text>{{item.name}}</text>
+      </label>
+    </radio-group>
+  </view>
+
+  <view class="hint">
+    <text>使用前请在云开发控制台为云函数 ai-proxy 配置环境变量：DeepSeek 模型需要 DEEPSEEK_API_KEY，GPT 模型需要 OPENAI_API_KEY，并上传部署该云函数。</text>
+  </view>
+</view>

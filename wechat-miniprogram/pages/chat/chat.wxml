@@ -1,0 +1,33 @@
+<view class="container {{nightModeClass}}">
+  <view class="header">
+    <text>对话</text>
+    <view class="header-actions">
+      <text class="night-label">夜间</text>
+      <switch checked="{{isNightMode}}" bindchange="toggleNightMode" />
+    </view>
+  </view>
+
+  <scroll-view class="chat-container" scroll-y>
+    <block wx:for="{{messages}}" wx:key="time">
+      <view class="message {{item.isUser ? 'user' : 'ai'}}">
+        <text class="content">{{item.content}}</text>
+        <text class="time">{{item.time}}</text>
+      </view>
+    </block>
+    <view wx:if="{{isLoading}}" class="message ai loading">思考中…</view>
+  </scroll-view>
+
+  <view class="input-container">
+    <input
+      value="{{inputValue}}"
+      bindinput="handleInput"
+      placeholder="输入消息..."
+      confirm-type="send"
+      bindconfirm="sendMessage"
+      disabled="{{isLoading}}"
+    />
+    <button bindtap="sendMessage" disabled="{{isLoading}}" loading="{{isLoading}}">
+      发送
+    </button>
+  </view>
+</view>

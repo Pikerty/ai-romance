@@ -1,0 +1,45 @@
+<view class="container {{nightModeClass}}">
+  <view class="toolbar">
+    <text class="title">AI 助手</text>
+    <button class="link-btn" size="mini" bindtap="goSettings">设置</button>
+  </view>
+
+  <scroll-view class="message-list" scroll-y scroll-into-view="msg-{{messages.length - 1}}">
+    <block wx:for="{{messages}}" wx:key="index">
+      <view
+        id="msg-{{index}}"
+        class="message {{item.role === 'user' ? 'user-message' : 'ai-message'}}"
+      >
+        <text>{{item.content}}</text>
+      </view>
+    </block>
+    <view wx:if="{{isLoading}}" class="message ai-message loading">思考中…</view>
+  </scroll-view>
+
+  <view class="input-area">
+    <input
+      value="{{inputValue}}"
+      placeholder="请输入消息"
+      confirm-type="send"
+      bindinput="onInputChange"
+      bindconfirm="sendMessage"
+      disabled="{{isLoading}}"
+    />
+    <button bindtap="sendMessage" disabled="{{isLoading}}" loading="{{isLoading}}">
+      发送
+    </button>
+  </view>
+
+  <view class="model-switcher">
+    <block wx:for="{{aiModels}}" wx:key="id">
+      <button
+        data-model="{{item.id}}"
+        bindtap="switchModel"
+        class="{{currentModel === item.id ? 'active' : ''}}"
+        disabled="{{isLoading}}"
+      >
+        {{item.name}}
+      </button>
+    </block>
+  </view>
+</view>

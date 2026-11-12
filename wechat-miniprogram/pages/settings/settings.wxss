@@ -1,0 +1,39 @@
+.settings-page {
+  padding: 32rpx;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.setting-item.column {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.label {
+  margin-bottom: 20rpx;
+  font-weight: 500;
+}
+
+.model-group {
+  width: 100%;
+}
+
+.model-option {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 0;
+}
+
+.hint {
+  margin-top: 48rpx;
+  font-size: 26rpx;
+  color: #888;
+  line-height: 1.6;
+}
